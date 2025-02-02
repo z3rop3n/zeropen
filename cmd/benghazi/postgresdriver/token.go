@@ -3,7 +3,6 @@ package postgresdriver
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/zeropen/pkg/types"
 	"gorm.io/gorm"
 )
@@ -29,15 +28,17 @@ func NewPostgresRefreshTokenQuery(db *gorm.DB) *PostgresRefreshTokenQuery {
 	return &PostgresRefreshTokenQuery{db: db}
 }
 
-func (p *PostgresRefreshTokenQuery) CreateOne(refreshToken string, exp int64, deviceId string, platform string, location string, userId string) error {
-	id := uuid.New().String()
+func (p *PostgresRefreshTokenQuery) CreateOne(refreshTokenId string, refreshToken string, exp int64, deviceId string, platform string, location string, userId string) error {
 	iat := time.Now().UnixMilli()
 	token := RefreshTokenModel{
-		Id:     id,
-		Token:  refreshToken,
-		Exp:    exp,
-		UserId: userId,
-		Iat:    iat,
+		Id:       refreshTokenId,
+		Token:    refreshToken,
+		Exp:      exp,
+		UserId:   userId,
+		Iat:      iat,
+		DeviceId: deviceId,
+		Platform: platform,
+		Location: location,
 	}
 	return p.db.Create(&token).Error
 }
@@ -48,10 +49,11 @@ func (p *PostgresRefreshTokenQuery) FindAllByUserId(userId string) (*[]types.Ref
 	err := p.db.Where("user_id = ?", userId).Find(&tokens).Error
 	for _, token := range tokens {
 		refreshTokens = append(refreshTokens, types.RefreshToken{
-			UserId: token.UserId,
-			Iat:    token.Iat,
-			Id:     token.Id,
-			Exp:    token.Exp,
+			UserId:   token.UserId,
+			Iat:      token.Iat,
+			Id:       token.Id,
+			Exp:      token.Exp,
+			IsActive: token.IsActive,
 		})
 	}
 	return &refreshTokens, err
@@ -61,9 +63,10 @@ func (p *PostgresRefreshTokenQuery) FindOneById(id string) (*types.RefreshToken,
 	var token RefreshTokenModel
 	err := p.db.Where("id = ?", id).Find(&token).Error
 	return &types.RefreshToken{
-		Id:     token.Id,
-		UserId: token.UserId,
-		Iat:    token.Iat,
-		Exp:    token.Exp,
+		Id:       token.Id,
+		UserId:   token.UserId,
+		Iat:      token.Iat,
+		Exp:      token.Exp,
+		IsActive: token.IsActive,
 	}, err
 }

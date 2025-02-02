@@ -18,16 +18,41 @@ func Create(mp map[string]interface{}, secretKey string) (*string, error) {
 
 	byteSecretKey := []byte(secretKey)
 	tokenString, err := token.SignedString(byteSecretKey)
-	fmt.Println("tokenString1", tokenString)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("tokenString2", tokenString)
 	return &tokenString, nil
 }
 
-func Verify(token string, secretKey string) (*types.AccessToken, error) {
-	var claims types.AccessToken
+// func Verify(token string, secretKey string) (*types.AccessToken, error) {
+// 	var claims types.AccessToken
+// 	tok, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+// 		return []byte(secretKey), nil
+// 	})
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	if !tok.Valid {
+// 		return nil, fmt.Errorf("invalid token")
+// 	}
+// 	claimsmp := tok.Claims.(jwt.MapClaims)
+// 	data, err := json.Marshal(claimsmp)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	if err := json.Unmarshal(data, &claims); err != nil {
+// 		return nil, err
+// 	}
+// 	fmt.Println("claims", claims)
+// 	return &claims, nil
+// }
+
+type TokenType interface {
+	types.RefreshToken | types.AccessToken
+}
+
+func Verify[T TokenType](token string, secretKey string) (*T, error) {
+	var claims T
 	tok, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secretKey), nil
 	})
@@ -45,6 +70,5 @@ func Verify(token string, secretKey string) (*types.AccessToken, error) {
 	if err := json.Unmarshal(data, &claims); err != nil {
 		return nil, err
 	}
-	fmt.Println("claims", claims)
 	return &claims, nil
 }

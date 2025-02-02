@@ -14,8 +14,9 @@ type AccessToken struct {
 }
 
 type RefreshToken struct {
-	Id     string `json:"id"`
-	UserId string `json:"userId"`
-	Iat    int64  `json:"iat"`
-	Exp    int64  `json:"exp"`
+	Id       string `json:"id"`
+	UserId   string `json:"userId"`
+	Iat      int64  `json:"iat"`
+	Exp      int64  `json:"exp"`
+	IsActive bool   `json:"isActive"`
 }

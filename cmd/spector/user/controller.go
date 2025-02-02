@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	HOUR_1_IN_MILI    = 60 * 60 * 1000
-	DAYS_30_IN_MILI   = 60 * 60 * 24 * 30 * 1000
-	MINUTES_5_IN_MILI = 60 * 5 * 1000
+	HOUR_1_IN_MILI    = token.HOUR_1_IN_MILI
+	DAYS_30_IN_MILI   = token.DAYS_30_IN_MILI_SECONDS
+	MINUTES_5_IN_MILI = token.MINUTES_5_IN_MILI
 )
 
 func (uApi *UserAPI) Signup(eadd string) (int, error) {
@@ -69,7 +69,8 @@ func (uApi *UserAPI) VerifyOTP(c context.Context, eadd string, otp string, devic
 	if err3 != nil || err2 != nil {
 		return 500, nil, fmt.Errorf("failed to create tokens")
 	}
-	uApi.config.RefreshTokenQuery.CreateOne(*refreshToken, refreshTokenExp, deviceId, platform, location, *user.Id)
+
+	uApi.config.RefreshTokenQuery.CreateOne(refreshTokenId, *refreshToken, refreshTokenExp, deviceId, platform, location, *user.Id)
 	verifyOTPResponse := VerifyOTPResponse{
 		AccessToken:  *accessToken,
 		RefreshToken: *refreshToken,

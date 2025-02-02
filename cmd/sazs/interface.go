@@ -26,7 +26,7 @@ type OTPQuery interface {
 }
 
 type RefreshTokenQuery interface {
-	CreateOne(refreshToken string, exp int64, deviceId string, platform string, location string, userId string) error
+	CreateOne(refreshTokenId string, refreshToken string, exp int64, deviceId string, platform string, location string, userId string) error
 	FindAllByUserId(userId string) (*[]types.RefreshToken, error)
 	FindOneById(id string) (*types.RefreshToken, error)
 }

@@ -1,2 +1,3 @@
 cmd/paulsen/.env
 cmd/benghazi/postgresdriver/migrations
+public/griffith/node_modules

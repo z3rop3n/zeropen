@@ -3,6 +3,7 @@ package token
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -13,6 +14,8 @@ import (
 
 const (
 	DAYS_30_IN_MILI_SECONDS = 30 * 24 * 60 * 60 * 1000
+	HOUR_1_IN_MILI          = 60 * 60 * 1000
+	MINUTES_5_IN_MILI       = 60 * 1000
 )
 
 type TokenController interface {
@@ -79,7 +82,7 @@ func (tok Token) CreateAccessToken(userId string, refreshTokenId string, whiteLi
 
 // Verify the access token
 func (tok Token) VerifyAccessToken(accessToken string) (*types.AccessToken, error) {
-	token, err := t.Verify(accessToken, tok.JWT_SECRET_KEY)
+	token, err := t.Verify[types.AccessToken](accessToken, tok.JWT_SECRET_KEY)
 	if err != nil {
 		return nil, err
 	}
@@ -102,4 +105,33 @@ func (tok Token) AccessAuthMiddleware(h http.Handler) func(w http.ResponseWriter
 		ctx := context.WithValue(r.Context(), AccessTokenKey, *tokenObj)
 		h.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func (tApi *TokenAPI) RefreshAccessToken(refreshToken string) (int, *string, error) {
+	token, err := t.Verify[types.RefreshToken](refreshToken, tApi.appConfig.JWT_AUTH_SECRET)
+	now := time.Now().UTC().UnixMilli()
+	if err != nil {
+		return 401, nil, err
+	}
+	tokenObj, err := tApi.config.RefreshTokenQuery.FindOneById(token.Id)
+	if err != nil {
+		return 401, nil, err
+	}
+	if tokenObj.UserId != token.UserId {
+		return 401, nil, fmt.Errorf("unauthorized")
+	}
+	if tokenObj.Exp < now {
+		return 401, nil, fmt.Errorf("token expired")
+	}
+	if !tokenObj.IsActive {
+		return 401, nil, fmt.Errorf("token is revoked")
+	}
+
+	newTok := NewTokenObj(tApi.appConfig.JWT_AUTH_SECRET)
+	newAccessToken, err := newTok.CreateAccessToken(tokenObj.UserId, tokenObj.Id, now+MINUTES_5_IN_MILI, now, now+HOUR_1_IN_MILI)
+	if err != nil {
+		return 401, nil, err
+	}
+
+	return 200, newAccessToken, nil
 }

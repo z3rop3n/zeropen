@@ -2,7 +2,6 @@ package user
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -87,9 +86,7 @@ func (uApi *UserAPI) VerifyOTPHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uApi *UserAPI) GetUserProfileHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("GetUserProfileHandler")
 	code, resp, err := uApi.GetUserProfile(r.Context())
-	fmt.Println("resp", resp)
 	if err != nil {
 		http.Error(w, err.Error(), code)
 		return
