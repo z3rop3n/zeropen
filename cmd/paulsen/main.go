@@ -23,8 +23,15 @@ func main() {
 		EmailAuthGoogle: emailAuthGoogle,
 		EmailFrom:       emailFromAddress,
 	}
-	// spector.Run(sazs.Config{}, appConfig)
-	postgresdb := postgresdriver.NewPostgresDB()
+
+	postgresdb := postgresdriver.NewPostgresDB(
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_SSLMODE"),
+	)
 	conf, err := postgresdb.Connect()
 
 	if err != nil {

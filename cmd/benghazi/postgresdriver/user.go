@@ -1,6 +1,7 @@
 package postgresdriver
 
 import (
+	"github.com/google/uuid"
 	"github.com/zeropen/pkg/types"
 	"gorm.io/gorm"
 )
@@ -25,9 +26,9 @@ func NewPostgresUserQuery(db *gorm.DB) *PostgresUserQuery {
 	return &PostgresUserQuery{db: db}
 }
 
-func (p PostgresUserQuery) GetUser(eadd string) (*types.User, error) {
+func (p PostgresUserQuery) GetByEmailId(eadd string) (*types.User, error) {
 	var user UserModel
-	if err := p.db.Where("email = ? AND is_deleted != ? AND is_verified != ?", eadd, true, true).First(&user).Error; err != nil {
+	if err := p.db.Where("email = ? AND is_deleted IS NULL OR NOT ?", eadd, true).First(&user).Error; err != nil {
 		return nil, err
 	}
 
@@ -40,15 +41,28 @@ func (p PostgresUserQuery) GetUser(eadd string) (*types.User, error) {
 	}, nil
 }
 
-// func (p PostgresUserQuery) GetOTPs(string, int64) ([]types.OTP, error) {
-// 	var otps []types.OTP
-// 	if err := p.db.Find(&otps).Error; err != nil {
-// 		return otps, err
-// 	} else {
-// 		return []types.OTP{}, err
-// 	}
-// }
+func (p PostgresUserQuery) GetById(id string) (*types.User, error) {
+	var user UserModel
+	if err := p.db.Where("id = ? AND is_deleted IS NULL OR NOT ?", id, true).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &types.User{
+		Id:            user.Id,
+		Email:         user.Email,
+		FirstName:     user.FirstName,
+		LastName:      user.LastName,
+		ProfilePicUrl: user.ProfilePicUrl,
+	}, nil
+}
 
-// func (p PostgresUserQuery) InsertOTP(string, string) error {
-// 	return nil
-// }
+func (p PostgresUserQuery) CreateOne(user types.User) error {
+	id := uuid.New().String()
+	userModel := UserModel{
+		Id:            &id,
+		Email:         user.Email,
+		FirstName:     user.FirstName,
+		LastName:      user.LastName,
+		ProfilePicUrl: user.ProfilePicUrl,
+	}
+	return p.db.Create(&userModel).Error
+}

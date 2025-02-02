@@ -35,6 +35,7 @@ func (p *PostgresOTPQuery) GetOTPs(email string, since int64) (*[]types.OTP, err
 			OTP:   otp.OTP,
 		})
 	}
+
 	return &otpsr, nil
 }
 

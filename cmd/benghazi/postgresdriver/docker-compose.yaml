@@ -21,4 +21,4 @@ networks:
 
 
 
-# psql "host=127.0.0.1 port=5431 dbname=surakshadb user=user password=password"
+# psql "host=127.0.0.1 port=5432 dbname=surakshadb user=user password=password"
