@@ -10,7 +10,7 @@ import (
 	"github.com/zeropen/app/spector/token"
 	"github.com/zeropen/app/spector/user"
 )
-
+	
 func Run(config sazs.Config, appConfig config.AppConfig) {
 	r := mux.NewRouter()
 	r.HandleFunc("/", HomeHandler)
