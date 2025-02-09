@@ -2,6 +2,7 @@ package token
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -33,7 +34,12 @@ func (tApi *TokenAPI) RefreshHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
 		return
 	}
+	// ctx := r.Context()
+	// ctx.Value(AccessTokenKey).(types.AccessToken)
+	fmt.Println("refresh token", req.RefreshToken)
 	code, resp, err := tApi.RefreshAccessToken(req.RefreshToken)
+	fmt.Println(err)
+	fmt.Println(*resp)
 	type RefreshResponse struct {
 		AccessToken *string `json:"accessToken"`
 	}

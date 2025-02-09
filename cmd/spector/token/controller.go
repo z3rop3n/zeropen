@@ -117,17 +117,19 @@ func (tApi *TokenAPI) RefreshAccessToken(refreshToken string) (int, *string, err
 	if err != nil {
 		return 401, nil, err
 	}
+	fmt.Println(tokenObj)
 	if tokenObj.UserId != token.UserId {
 		return 401, nil, fmt.Errorf("unauthorized")
 	}
-	if tokenObj.Exp < now {
-		return 401, nil, fmt.Errorf("token expired")
-	}
+	// if tokenObj.Exp < now {
+	// 	return 401, nil, fmt.Errorf("token expired")
+	// }
 	if !tokenObj.IsActive {
 		return 401, nil, fmt.Errorf("token is revoked")
 	}
 
 	newTok := NewTokenObj(tApi.appConfig.JWT_AUTH_SECRET)
+	fmt.Println(newTok)
 	newAccessToken, err := newTok.CreateAccessToken(tokenObj.UserId, tokenObj.Id, now+MINUTES_5_IN_MILI, now, now+HOUR_1_IN_MILI)
 	if err != nil {
 		return 401, nil, err

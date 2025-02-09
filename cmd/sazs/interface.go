@@ -18,6 +18,7 @@ type UserQuery interface {
 	GetByEmailId(eadd string) (*types.User, error)
 	GetById(id string) (*types.User, error)
 	CreateOne(user types.User) error
+	UpdateOne(user types.User) error
 }
 
 type OTPQuery interface {

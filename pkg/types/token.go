@@ -20,3 +20,10 @@ type RefreshToken struct {
 	Exp      int64  `json:"exp"`
 	IsActive bool   `json:"isActive"`
 }
+
+func (rt RefreshToken) GetExp() int64 {
+	return rt.Exp
+}
+func (at AccessToken) GetExp() int64 {
+	return at.Exp
+}

@@ -26,6 +26,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/rs/cors v1.11.1 // indirect
 	github.com/zeropen v0.0.0-00010101000000-000000000000 // indirect
 	github.com/zeropen/app/sazs v0.0.0-00010101000000-000000000000 // indirect
 	golang.org/x/crypto v0.17.0 // indirect

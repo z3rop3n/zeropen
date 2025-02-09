@@ -49,9 +49,11 @@ func Create(mp map[string]interface{}, secretKey string) (*string, error) {
 
 type TokenType interface {
 	types.RefreshToken | types.AccessToken
+	GetExp() int64
 }
 
 func Verify[T TokenType](token string, secretKey string) (*T, error) {
+	now := time.Now().UnixMilli()
 	var claims T
 	tok, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secretKey), nil
@@ -67,8 +69,12 @@ func Verify[T TokenType](token string, secretKey string) (*T, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if err := json.Unmarshal(data, &claims); err != nil {
 		return nil, err
+	}
+	if now > claims.GetExp() {
+		return nil, fmt.Errorf("token expired")
 	}
 	return &claims, nil
 }

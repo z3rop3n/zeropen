@@ -66,3 +66,7 @@ func (p PostgresUserQuery) CreateOne(user types.User) error {
 	}
 	return p.db.Create(&userModel).Error
 }
+
+func (p PostgresUserQuery) UpdateOne(user types.User) error {
+	return p.db.Model(&UserModel{}).Where("id = ?", user.Id).Updates(user).Error
+}

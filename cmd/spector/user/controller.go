@@ -90,3 +90,19 @@ func (uApi *UserAPI) GetUserProfile(c context.Context) (int, *types.User, error)
 	}
 	return 200, user, nil
 }
+
+func (uApi *UserAPI) Update(c context.Context, userId string, firstName *string, lastName *string, email *string, dateOfBirth *string) (int, error) {
+	user, err := uApi.config.UserQuery.GetById(userId)
+	if err != nil {
+		return 500, err
+	}
+	if firstName != nil {
+		user.FirstName = firstName
+	}
+	if lastName != nil {
+		user.LastName = lastName
+	}
+	uApi.config.UserQuery.UpdateOne(*user)
+
+	return 200, nil
+}

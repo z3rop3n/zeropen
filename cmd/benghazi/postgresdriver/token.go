@@ -39,6 +39,7 @@ func (p *PostgresRefreshTokenQuery) CreateOne(refreshTokenId string, refreshToke
 		DeviceId: deviceId,
 		Platform: platform,
 		Location: location,
+		IsActive: true,
 	}
 	return p.db.Create(&token).Error
 }

@@ -1,10 +1,14 @@
 import React from 'react';
 import Login from './views/login';
-
+import Profile from './views/Profile';
 function App() {
   return (
     <div>
-      <Login />
+      {localStorage.getItem('accessToken') ? (
+        <Profile />
+      ) : (
+        <Login />
+      )}
     </div>
   );
 }
